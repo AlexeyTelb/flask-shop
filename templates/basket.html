@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список товаров</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Навигация -->
+   <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Мой магазин</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('products') }}">Товары</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('basket') }}">Корзина</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('orders') }}">Мои заказы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Выйти</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="btn btn-outline-primary" href="{{ url_for('client_page') }}">Мой профиль</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>-->
+    {% extends "base.html" %}
+    {% block content %}
+    <div class="container mt-4">
+        <h2>🛒 Ваша корзина</h2>
+
+        {% if basket_items %}
+            <div class="row">
+                {% for item in basket_items %}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="{{ item.product.photo }}" class="card-img-top" alt="{{ item.product.productname }}" style="height: 200px; object-fit: cover;">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ item.product.productname }}</h5>
+                            <p class="card-text"><strong>Цена:</strong> {{ item.price }} ₽</p>
+                            <p class="card-text"><strong>В наличии:</strong> {{ item.stock_quantity }}</p>
+
+                            <!-- Форма обновления количества товара -->
+                            <form action="{{ url_for('update_basket', basket_id=item.basketid) }}" method="POST" class="d-flex justify-content-center">
+                                <input type="number" name="quantity" min="1" max="{{ item.stock_quantity }}" value="{{ item.quantity }}" class="form-control me-2" style="width: 70px;">
+                                <button type="submit" class="btn btn-primary btn-sm">🔄</button>
+                            </form>
+
+                            <!-- Форма удаления товара -->
+                            <form action="{{ url_for('remove_from_basket', basket_id=item.basketid) }}" method="POST" class="mt-2">
+                                <button type="submit" class="btn btn-danger btn-sm">❌ Удалить</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        <form action="{{ url_for('place_order') }}" method="POST">
+            <button type="submit" class="btn btn-success mt-3">Оформить заказ</button>
+        </form>
+
+        {% else %}
+        <p>Ваша корзина пуста.</p>
+        {% endif %}
+    </div>
+    {% endblock %}
+</body>
+</html>

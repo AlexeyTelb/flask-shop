@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+    <h1 class="text-center">Добро пожаловать{% if username %}, {{ username }}{% endif %}!</h1>
+    {% if username %}
+        <p class="text-center"><a href="/logout" class="btn btn-primary">Выйти</a></p>
+    {% else %}
+        <p class="text-center">
+            <a href="/login" class="btn btn-primary">Войти</a>
+            <a href="/register" class="btn btn-secondary">Регистрация</a>
+        </p>
+    {% endif %}
+{% endblock %}

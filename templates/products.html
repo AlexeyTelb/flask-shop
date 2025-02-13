@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список товаров</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Навигация
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Мой магазин</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('products') }}">Товары</a>
+                    </li>
+                    {% if is_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link " href="{{ url_for('add_product') }}">Добавить товар</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('basket') }}">Корзина</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('orders') }}">Мои заказы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Выйти</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="btn btn-outline-primary" href="{{ url_for('client_page') }}">Мой профиль</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>-->
+    {% extends "base.html" %}
+    {% block content %}
+    <div class="container mt-4">
+        <h2>🛍️ Список товаров</h2>
+
+        <!-- Поле поиска -->
+        <input type="text" id="searchBox" class="form-control mb-3" placeholder="🔍 Поиск по товарам...">
+
+        <!-- Кнопки сортировки -->
+        <div class="mb-3">
+            <label>Сортировка:</label>
+            <select id="sortSelect" class="form-select">
+                <option value="default">Без сортировки</option>
+                <option value="price_asc">Цена: по возрастанию</option>
+                <option value="price_desc">Цена: по убыванию</option>
+                <option value="name_asc">Название: от А до Я</option>
+                <option value="name_desc">Название: от Я до А</option>
+            </select>
+        </div>
+
+        <!-- Вывод товаров -->
+        <div class="row" id="productList">
+            {% for product in products %}
+            <div class="col-md-3 mb-4 product-card"
+                 data-name="{{ product.productname.lower() }}"
+                 data-price="{{ product.price }}">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ product.photo }}" class="card-img-top" alt="{{ product.productname }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.productname }}</h5>
+                        <p class="card-text"><strong>Цена:</strong> {{ product.price }} ₽</p>
+                        <a href="{{ url_for('product_detail', product_id=product.productid) }}" class="btn btn-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+    // Фильтр по названию (без перезагрузки)
+    document.getElementById("searchBox").addEventListener("input", function() {
+        let searchValue = this.value.toLowerCase();
+        let products = document.querySelectorAll(".product-card");
+
+        products.forEach(product => {
+            let name = product.getAttribute("data-name");
+            if (name.includes(searchValue)) {
+                product.style.display = "block";
+            } else {
+                product.style.display = "none";
+            }
+        });
+    });
+
+    // Сортировка товаров (без перезагрузки)
+    document.getElementById("sortSelect").addEventListener("change", function() {
+        let sortValue = this.value;
+        let productList = document.getElementById("productList");
+        let products = Array.from(document.querySelectorAll(".product-card"));
+
+        if (sortValue === "price_asc") {
+            products.sort((a, b) => a.dataset.price - b.dataset.price);
+        } else if (sortValue === "price_desc") {
+            products.sort((a, b) => b.dataset.price - a.dataset.price);
+        } else if (sortValue === "name_asc") {
+            products.sort((a, b) => a.dataset.name.localeCompare(b.dataset.name));
+        } else if (sortValue === "name_desc") {
+            products.sort((a, b) => b.dataset.name.localeCompare(a.dataset.name));
+        }
+
+        // Перестановка элементов в DOM
+        products.forEach(product => productList.appendChild(product));
+    });
+    </script>
+    {% endblock %}
+</body>
+</html>
